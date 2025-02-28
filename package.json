@@ -9,7 +9,8 @@
     "test": "jest",
     "prepare": "husky install",
     "start": "node listen.js",
-    "test-seed": "jest seed.test.js"
+    "test-seed": "jest seed.test.js",
+    "utils-test": "jest utils.test.js"
   },
   "repository": {
     "type": "git",
@@ -29,9 +30,10 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "pg": "^8.13.3"
+    "pg": "^8.13.3",
+    "pg-format": "^1.0.4"
   },
-   "jest": {
+  "jest": {
     "setupFilesAfterEnv": [
       "jest-extended/all"
     ]
