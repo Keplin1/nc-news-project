@@ -8,7 +8,7 @@ exports.handleServerErrors = (err, request, response, next) => {
 
 exports.handlePsqlErrors = (err, request, response, next) => {
     if (err.code === '22P02') {
-        response.status(404).send({ message: '404: passed data is invalid' })
+        response.status(400).send({ message: '400: passed data is invalid' })
     }
     next(err)
 }

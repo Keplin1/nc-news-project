@@ -1,10 +1,10 @@
-const { userData } = require("../db/data/test-data");
 const {
   convertTimestampToDate,
   formatTopics,
   formatUsers,
   formatArticles,
-  formatComments
+  formatComments,
+  checkExists
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -43,8 +43,6 @@ describe("convertTimestampToDate", () => {
   });
 });
 
-
-
 describe('formatTopics', () => {
   test('returns a nested array', () => {
     const input = [{ key: 'value' }];
@@ -81,7 +79,6 @@ describe('formatTopics', () => {
       ["coding", "Code is love, code is life", ""], ["football", "FOOTIE!", "https://images.pexels.com/photos/209841/pexels-photo-209841.jpeg?w=700&h=700"], ["cooking", "Hey good looking, what you got cooking?", "https://images.pexels.com/photos/33242/cooking-ingredient-cuisine-kitchen.jpg?w=700&h=700"]])
   })
 })
-
 
 describe('formatUsers', () => {
   test('returns an array of arrays', () => {
@@ -217,7 +214,6 @@ describe('formatArticles', () => {
   })
 })
 
-// article data, userdata, commentsdata
 describe('formatComments', () => {
 
   test('returns a nested array', () => {
@@ -292,4 +288,21 @@ describe('formatComments', () => {
   })
 })
 
+describe('checkExists', () => {
+  test('resolves the value if the resource exists', () => {
 
+    checkExists('articles', 'article_id', 1).then((response) => {
+      expect(typeof response).toBe('object');
+      expect(response.length).toEqual(1)
+    })
+  })
+
+  test('rejects if the resource does not exists', () => {
+
+    checkExists('articles', 'article_id', 155).then((response) => {
+      expect(response.message).toBe('value not found');
+      expect(response.status).toBe(404)
+    })
+  })
+
+})
