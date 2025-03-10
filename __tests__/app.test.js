@@ -6,6 +6,7 @@ const request = require('supertest');
 
 const app = require("../app");
 const { string } = require("pg-format");
+const articles = require("../db/data/test-data/articles");
 beforeEach(() => {
   return seed(data)
 
@@ -63,7 +64,7 @@ describe('GET /api/topics', () => {
 
   test('404: if path not found, responds with an error message', () => {
     return request(app)
-      .get('/app/topcs')
+      .get('/api/topcs')
       .expect(404)
       .then(({ body }) => {
         const response = body.message;
@@ -86,7 +87,6 @@ describe('GET /api/articles/:article_id', () => {
         const article = body.articles[0];
         const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
 
-        expect(typeof article_id).toBe('number');
         expect(article_id).toBe(4);
         expect(typeof title).toBe('string');
         expect(typeof topic).toBe('string');
@@ -108,17 +108,61 @@ describe('GET /api/articles/:article_id', () => {
         expect(body.message).toBe('400: id was not found')
       })
   })
-  test('ERROR 400: responds with an error message if the id is not of a valid format', () => {
+  test('ERROR 404: responds with an error message if the id is not of a valid format', () => {
 
     return request(app)
       .get('/api/articles/banana')
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        console.log(body.message)
 
-        expect(body.message).toBe('400: passed data is invalid')
+
+        expect(body.message).toBe('404: passed data is invalid')
       })
   })
+})
+
+describe('/api/articles', () => {
+  test('GET 200: returns an array of article objects', () => {
+
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+
+        expect(articles.forEach(article => {
+
+          const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count } = article;
+          expect(typeof author).toBe('string');
+          expect(typeof title).toBe('string');
+          expect(typeof article_id).toBe('number');
+          expect(typeof topic).toBe('string');
+          expect(typeof created_at).toBe('string');
+          expect(typeof votes).toBe('number');
+          expect(typeof article_img_url).toBe('string')
+          expect(typeof comment_count).toBe('number')
+          expect(article.body).toBe(undefined)
+
+          expect(articles).toBeSortedBy('created_at', {
+            descending: true
+          });
+
+        }))
+      })
+
+  })
+  test('404: if path not found, responds with an error message', () => {
+    return request(app)
+      .get('/api/articls')
+      .expect(404)
+      .then(({ body }) => {
+        const response = body.message;
+        expect(response).toEqual('404: path not found')
+
+      })
+  })
+
 })
 
 

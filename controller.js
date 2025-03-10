@@ -1,6 +1,7 @@
 const { response } = require("./app");
+const articles = require("./db/data/test-data/articles");
 const endpoints = require('./endpoints.json');
-const { fetchAllTopics, fetchArticleById } = require('./model')
+const { fetchAllTopics, fetchArticleById, fetchAllArticles } = require('./model')
 
 const getAllEndpoints = (request, response, next) => {
     response.status(200).send({ endpoints })
@@ -27,4 +28,15 @@ const getArticleById = (request, response, next) => {
     })
 }
 
-module.exports = { getAllEndpoints, getAllTopics, getArticleById }
+const getAllArticles = (request, response, next) => {
+    fetchAllArticles().then((articles) => {
+        response.status(200).send({ articles })
+
+    }).catch((err) => {
+        next(err)
+    })
+
+
+}
+
+module.exports = { getAllEndpoints, getAllTopics, getArticleById, getAllArticles }
