@@ -6,12 +6,22 @@
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        {
+          "slug": "football",
+          "description": "Footie!"
+        }
+      ]
     }
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [
+      "author",
+      "topic",
+      "sort_by",
+      "order"
+    ],
     "exampleResponse": {
       "articles": [
         {
@@ -22,6 +32,23 @@
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
           "comment_count": 6
+        }
+      ]
+    }
+  },
+  "'GET /api/articles/:article_id'": {
+    "description": "retuns an individual object selected by its id",
+    "queries": [],
+    "exampleResponse": {
+      "articles": [
+        {
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": 1594329060000,
+          "votes": 100,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         }
       ]
     }

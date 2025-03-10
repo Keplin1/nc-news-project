@@ -32,8 +32,7 @@ describe("GET /api", () => {
       .get('/app')
       .expect(404)
       .then(({ body }) => {
-        const response = body.message
-        console.log(response)
+        const response = body.message;
         expect(response).toEqual('404: path not found')
 
       })
@@ -41,24 +40,22 @@ describe("GET /api", () => {
   })
 });
 
-describe('/api/topics', () => {
-  test('GET 200: responds with an array of topic objects, each of which have slug and description properties', () => {
+describe('GET /api/topics', () => {
+  test('200: responds with an array of topic objects, each of which have slug and description properties', () => {
 
     return request(app)
       .get('/api/topics')
       .expect(200)
       .then(({ body }) => {
-        const topics = body.topics
-        console.log(body)
+        const topics = body.topics;
 
+        expect(topics.length).toEqual(3);
         expect(topics.forEach(topic => {
 
           const { slug, description } = topic;
 
           expect(typeof slug).toBe('string');
           expect(typeof description).toBe('string')
-
-
         }))
       })
 
@@ -69,11 +66,60 @@ describe('/api/topics', () => {
       .get('/app/topcs')
       .expect(404)
       .then(({ body }) => {
-        const response = body.message
-        console.log(response)
+        const response = body.message;
         expect(response).toEqual('404: path not found')
 
       })
   })
-
 })
+
+
+describe('GET /api/articles/:article_id', () => {
+  test('200: retuns an individual object of a specific id ', () => {
+
+
+    return request(app)
+      .get('/api/articles/4')
+      .expect(200)
+      .then(({ body }) => {
+
+        const article = body.articles[0];
+        const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
+
+        expect(typeof article_id).toBe('number');
+        expect(article_id).toBe(4);
+        expect(typeof title).toBe('string');
+        expect(typeof topic).toBe('string');
+        expect(typeof author).toBe('string');
+        expect(typeof article.body).toBe('string')
+        expect(typeof created_at).toBe('string');
+        expect(typeof votes).toBe('number');
+        expect(typeof article_img_url).toBe('string')
+
+      })
+  })
+
+  test('ERROR 400: responds with an error message if id is of valid format but does not exist in the database', () => {
+
+    return request(app)
+      .get('/api/articles/400')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe('400: id was not found')
+      })
+  })
+  test('ERROR 400: responds with an error message if the id is not of a valid format', () => {
+
+    return request(app)
+      .get('/api/articles/banana')
+      .expect(400)
+      .then(({ body }) => {
+        console.log(body.message)
+
+        expect(body.message).toBe('400: passed data is invalid')
+      })
+  })
+})
+
+
+
