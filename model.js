@@ -66,11 +66,31 @@ const fetchAndPostCommentsByArticleId = (article_id, username, body) => {
 
 }
 
+const fetchAndPatchArticlesById = (currentVote, inc_votes, article_id) => {
+
+
+    const updatedVote = currentVote + inc_votes;
+
+    return db.query('UPDATE articles SET votes =$1 WHERE article_id =$2 RETURNING *', [updatedVote, article_id]).then(({ rows }) => {
+        return rows
+
+    })
+
+}
+
+// return db.query('UPDATE treasures SET cost_at_auction =$1 WHERE treasure_id=$2 RETURNING *', [cost_at_auction, treasure_id]).then(({ rows }) => {
+//     const response = rows
+//     if (response.length === 0) {
+//         return Promise.reject({ status: 400, message: "Invalid input data" })
+//     }
+//     return response
+// })
 
 module.exports = {
     fetchAllTopics,
     fetchArticleById,
     fetchAllArticles,
     fetchCommentsByArticleId,
-    fetchAndPostCommentsByArticleId
+    fetchAndPostCommentsByArticleId,
+    fetchAndPatchArticlesById
 }
