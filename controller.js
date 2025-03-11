@@ -4,9 +4,11 @@ const {
     fetchArticleById,
     fetchAllArticles,
     fetchCommentsByArticleId,
-    fetchAndPostCommentsByArticleId
+    fetchAndPostCommentsByArticleId,
+    fetchAndPatchArticlesById
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
+const { response } = require('./app');
 
 const getAllEndpoints = (request, response, next) => {
     response.status(200).send({ endpoints });
@@ -75,11 +77,36 @@ const postCommentsByArticleId = (request, response, next) => {
         });
 };
 
+const patchArticleById = (request, response, next) => {
+    const articleId = request.params.article_id;
+    const { inc_votes } = request.body;
+
+    checkExists('articles', 'article_id', articleId)
+        .then((res) => {
+            const currentVote = res[0].votes;
+            return { currentVote }
+        })
+        .then(({ currentVote }) => {
+
+            return fetchAndPatchArticlesById(currentVote, inc_votes, articleId);
+        })
+        .then((articles) => {
+
+            response.status(200).send({ articles });
+        })
+        .catch((err) => {
+            next(err);
+        });
+
+
+}
+
 module.exports = {
     getAllEndpoints,
     getAllTopics,
     getArticleById,
     getAllArticles,
     getCommentsByArticleId,
-    postCommentsByArticleId
+    postCommentsByArticleId,
+    patchArticleById
 }

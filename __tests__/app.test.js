@@ -303,3 +303,73 @@ describe('POST /api/articles/:article_id/comments', () => {
   })
 
 })
+
+
+describe('PATCH /api/articles/:article_id', () => {
+
+  test('PATCH 200: responds with an updated article', () => {
+
+    return request(app)
+      .patch('/api/articles/2')
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+
+        const article = body.articles[0];
+        console.log(article)
+        const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
+
+        expect(article_id).toBe(2);
+        expect(votes).toBe(1)
+        expect(typeof title).toBe('string');
+        expect(typeof topic).toBe('string');
+        expect(typeof author).toBe('string');
+        expect(typeof created_at).toBe('string');
+        expect(typeof article.body).toBe('string')
+        expect(typeof article_img_url).toBe('string');
+      })
+  })
+  test('PATCH ERROR 400:  the input in the body is of invalid format', () => {
+
+    return request(app)
+      .patch('/api/articles/2')
+      .send({ inc_votes: 'one' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+
+  });
+  test('PATCH ERROR 400: the input in the body is missing', () => {
+
+    return request(app)
+      .patch('/api/articles/2')
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+
+  });
+  test('ERROR 404: returns an error message if the article_id is of valid format but does not exist', () => {
+
+
+    return request(app)
+      .patch('/api/articles/2222')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('value not found')
+      })
+  });
+  test('ERROR 400: returns an error message if the article_id is of invalid format', () => {
+
+
+    return request(app)
+      .patch('/api/articles/banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+  });
+
+})
