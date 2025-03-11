@@ -51,13 +51,13 @@ describe('GET /api/topics', () => {
         const topics = body.topics;
 
         expect(topics.length).toEqual(3);
-        expect(topics.forEach(topic => {
+        topics.forEach(topic => {
 
           const { slug, description } = topic;
 
           expect(typeof slug).toBe('string');
           expect(typeof description).toBe('string')
-        }))
+        })
       })
 
   })
@@ -72,7 +72,7 @@ describe('GET /api/topics', () => {
 
       })
   })
-})
+});
 
 
 describe('GET /api/articles/:article_id', () => {
@@ -85,6 +85,7 @@ describe('GET /api/articles/:article_id', () => {
       .then(({ body }) => {
 
         const article = body.articles[0];
+
         const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
 
         expect(article_id).toBe(4);
@@ -99,27 +100,27 @@ describe('GET /api/articles/:article_id', () => {
       })
   })
 
-  test('ERROR 400: responds with an error message if id is of valid format but does not exist in the database', () => {
+  test('ERROR 404: responds with an error message if id is of valid format but does not exist in the database', () => {
 
     return request(app)
       .get('/api/articles/400')
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe('400: id was not found')
+        expect(body.message).toBe('404: id was not found')
       })
   })
-  test('ERROR 404: responds with an error message if the id is not of a valid format', () => {
+  test('ERROR 400: responds with an error message if the id is not of a valid format', () => {
 
     return request(app)
       .get('/api/articles/banana')
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
 
 
-        expect(body.message).toBe('404: passed data is invalid')
+        expect(body.message).toBe('400: passed data is invalid')
       })
   })
-})
+});
 
 describe('/api/articles', () => {
   test('GET 200: returns an array of article objects', () => {
@@ -131,7 +132,8 @@ describe('/api/articles', () => {
         const articles = body.articles;
 
 
-        expect(articles.forEach(article => {
+        expect(articles.length).toEqual(13);
+        articles.forEach(article => {
 
           const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count } = article;
           expect(typeof author).toBe('string');
@@ -144,11 +146,11 @@ describe('/api/articles', () => {
           expect(typeof comment_count).toBe('number')
           expect(article.body).toBe(undefined)
 
-          expect(articles).toBeSortedBy('created_at', {
-            descending: true
-          });
+        });
 
-        }))
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true
+        });
       })
 
   })
@@ -163,6 +165,67 @@ describe('/api/articles', () => {
       })
   })
 
+});
+
+
+describe('/api/articles/:article_id/comments', () => {
+
+  test('GET 200: returns an array of comments for a given article_id', () => {
+
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+
+        expect(articles.length).toEqual(13);
+        comments.forEach(comment => {
+          const { comment_id, votes, created_at, author, article_id } = comment;
+          expect(typeof comment_id).toBe('number');
+          expect(typeof votes).toBe('number');
+          expect(typeof comment.body).toBe('string');
+          expect(typeof author).toBe('string');
+          expect(typeof created_at).toBe('string');
+          expect(typeof votes).toBe('number');
+          expect(article_id).toBe(1)
+        });
+
+        expect(comments).toBeSortedBy('created_at', {
+          descending: true
+        })
+      })
+  });
+
+  test('GET 200: returns an empty array for comments when the article does not have any comments', () => {
+    return request(app)
+      .get('/api/articles/2/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(0);
+      })
+  });
+
+  test('ERROR 404: returns an error message if the article_id is of valid format but does not exist', () => {
+
+
+    return request(app)
+      .get('/api/articles/700/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('value not found')
+      })
+  });
+  test('ERROR 400: returns an error message if the article_id is of invalid format', () => {
+
+
+    return request(app)
+      .get('/api/articles/one/comments')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+  });
 })
 
 
