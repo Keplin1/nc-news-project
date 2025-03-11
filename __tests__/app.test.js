@@ -371,8 +371,7 @@ describe('PATCH /api/articles/:article_id', () => {
         expect(body.message).toBe("400: passed data is invalid")
       })
   });
-
-})
+});
 
 describe('DELETE /api/comments/:comment_id', () => {
 
@@ -421,4 +420,38 @@ describe('DELETE /api/comments/:comment_id', () => {
   });
 
 
-})
+});
+
+describe('GET /api/users', () => {
+  test('200: responds with an array of user objects, each of which have username, name and avatar_url properties', () => {
+
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+
+        expect(users.length).toEqual(4);
+        users.forEach(user => {
+
+          const { username, name, avatar_url } = user;
+
+          expect(typeof username).toBe('string');
+          expect(typeof name).toBe('string');
+          expect(typeof avatar_url).toBe('string');
+        })
+      })
+
+  })
+
+  test('404: if path not found, responds with an error message', () => {
+    return request(app)
+      .get('/api/userss')
+      .expect(404)
+      .then(({ body }) => {
+        const response = body.message;
+        expect(response).toEqual('404: path not found')
+
+      })
+  })
+});

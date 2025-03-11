@@ -6,14 +6,15 @@ const {
     fetchCommentsByArticleId,
     fetchAndPostCommentsByArticleId,
     fetchAndPatchArticlesById,
-    fetchAndDeleteComments
+    fetchAndDeleteComments,
+    fetchAllUsers
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
-const { response } = require('./app');
 
 const getAllEndpoints = (request, response, next) => {
     response.status(200).send({ endpoints });
-}
+};
+
 const getAllTopics = (request, response, next) => {
     fetchAllTopics()
         .then((topics) => {
@@ -21,7 +22,7 @@ const getAllTopics = (request, response, next) => {
         }).catch((err) => {
             next(err)
         })
-}
+};
 
 const getArticleById = (request, response, next) => {
     const articleId = request.params.article_id;
@@ -32,7 +33,7 @@ const getArticleById = (request, response, next) => {
         }).catch((err) => {
             next(err)
         })
-}
+};
 
 const getAllArticles = (request, response, next) => {
     fetchAllArticles()
@@ -41,7 +42,7 @@ const getAllArticles = (request, response, next) => {
         }).catch((err) => {
             next(err)
         })
-}
+};
 
 const getCommentsByArticleId = (request, response, next) => {
     const articleId = request.params.article_id;
@@ -54,8 +55,7 @@ const getCommentsByArticleId = (request, response, next) => {
         }).catch((err) => {
             next(err)
         });
-}
-
+};
 
 const postCommentsByArticleId = (request, response, next) => {
     const articleId = request.params.article_id;
@@ -98,7 +98,7 @@ const patchArticleById = (request, response, next) => {
         .catch((err) => {
             next(err);
         });
-}
+};
 
 const deleteCommentsById = (request, response, next) => {
     const commentId = request.params.comment_id;
@@ -113,6 +113,15 @@ const deleteCommentsById = (request, response, next) => {
             next(err);
         });
 
+};
+
+const getAllUsers = (request, response, next) => {
+    fetchAllUsers()
+        .then((users) => {
+            response.status(200).send({ users })
+        }).catch((err) => {
+            next(err)
+        })
 }
 
 module.exports = {
@@ -123,5 +132,6 @@ module.exports = {
     getCommentsByArticleId,
     postCommentsByArticleId,
     patchArticleById,
-    deleteCommentsById
-}
+    deleteCommentsById,
+    getAllUsers
+};
