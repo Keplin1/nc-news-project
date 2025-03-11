@@ -8,7 +8,8 @@ const { getAllEndpoints,
     getAllArticles,
     getCommentsByArticleId,
     postCommentsByArticleId,
-    patchArticleById
+    patchArticleById,
+    deleteCommentsById
 } = require('./controller')
 
 app.get('/api', getAllEndpoints);
@@ -18,6 +19,7 @@ app.get('/api/articles', getAllArticles)
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', postCommentsByArticleId)
 app.patch('/api/articles/:article_id', patchArticleById)
+app.delete('/api/comments/:comment_id', deleteCommentsById)
 
 app.use(handleServerErrors)
 app.use(handlePsqlErrors)

@@ -12,3 +12,4 @@ exports.handlePsqlErrors = (err, request, response, next) => {
     }
     next(err)
 }
+
