@@ -3,7 +3,6 @@ const db = require("../db/connection")
 const seed = require("../db/seeds/seed")
 const data = require("../db/data/test-data")
 const request = require('supertest');
-
 const app = require("../app");
 const { string } = require("pg-format");
 const articles = require("../db/data/test-data/articles");
@@ -229,4 +228,78 @@ describe('/api/articles/:article_id/comments', () => {
 })
 
 
+describe('POST /api/articles/:article_id/comments', () => {
+  test('POST 201: respons with a newly posted comment object', () => {
 
+    return request(app)
+      .post('/api/articles/2/comments')
+      .send({ username: "butter_bridge", body: 'the Office US is way better than the UKs version' })
+      .expect(201)
+      .then(({ body: responseBody }) => {
+        const comment = responseBody.comments[0];
+        const { author, body } = comment;
+        expect(author).toBe("butter_bridge");
+        expect(comment.body).toBe('the Office US is way better than the UKs version');
+        expect(typeof author).toBe('string');
+        expect(typeof body).toBe('string');
+
+      })
+  })
+
+  test('ERROR 404: the username does not match the users data', () => {
+
+
+    return request(app)
+      .post('/api/articles/2/comments')
+      .send({ username: "Michael_Scarn", body: 'the Office US is way better than the UKs version' })
+      .expect(404)
+      .then(({ body }) => {
+
+        expect(body.message).toBe('value not found')
+
+      })
+  })
+
+  test('POST ERROR 400: the username is valid but the body key is missing', () => {
+    return request(app)
+      .post('/api/articles/2/comments')
+      .send({ username: "butter_bridge" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Missing required fields")
+
+      })
+
+  })
+  test('POST ERROR 400: the username key is missing', () => {
+    return request(app)
+      .post('/api/articles/2/comments')
+      .send({ body: 'the Office US is way better than the UKs version' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Missing required fields")
+
+      })
+  })
+  test('POST ERROR 404: returns an error message if the article_id is of valid format but does not exist', () => {
+    return request(app)
+      .post('/api/articles/700/comments')
+      .send({ username: "butter_bridge", body: 'the Office US is way better than the UKs version' })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('value not found')
+
+      })
+
+  })
+  test('POST ERROR 400: returns an error message if the article_id is of invalid format', () => {
+    return request(app)
+      .post('/api/articles/thousand/comments')
+      .send({ username: "butter_bridge", body: 'the Office US is way better than the UKs version' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+  })
+
+})
