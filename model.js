@@ -78,13 +78,15 @@ const fetchAndPatchArticlesById = (currentVote, inc_votes, article_id) => {
 
 }
 
-// return db.query('UPDATE treasures SET cost_at_auction =$1 WHERE treasure_id=$2 RETURNING *', [cost_at_auction, treasure_id]).then(({ rows }) => {
-//     const response = rows
-//     if (response.length === 0) {
-//         return Promise.reject({ status: 400, message: "Invalid input data" })
-//     }
-//     return response
-// })
+const fetchAndDeleteComments = (commentId) => {
+
+    return db.query('DELETE FROM comments WHERE comment_id= $1', [commentId]).then(({ rows }) => {
+        const response = rows[0]
+
+        return response
+    })
+
+}
 
 module.exports = {
     fetchAllTopics,
@@ -92,5 +94,6 @@ module.exports = {
     fetchAllArticles,
     fetchCommentsByArticleId,
     fetchAndPostCommentsByArticleId,
-    fetchAndPatchArticlesById
+    fetchAndPatchArticlesById,
+    fetchAndDeleteComments
 }

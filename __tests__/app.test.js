@@ -311,16 +311,16 @@ describe('PATCH /api/articles/:article_id', () => {
 
     return request(app)
       .patch('/api/articles/2')
-      .send({ inc_votes: 1 })
+      .send({ inc_votes: -100 })
       .expect(200)
       .then(({ body }) => {
 
         const article = body.articles[0];
-        console.log(article)
+
         const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
 
         expect(article_id).toBe(2);
-        expect(votes).toBe(1)
+        expect(votes).toBe(-100)
         expect(typeof title).toBe('string');
         expect(typeof topic).toBe('string');
         expect(typeof author).toBe('string');
@@ -371,5 +371,54 @@ describe('PATCH /api/articles/:article_id', () => {
         expect(body.message).toBe("400: passed data is invalid")
       })
   });
+
+})
+
+describe('DELETE /api/comments/:comment_id', () => {
+
+  test('204 delete: delets a comment by its id and responds with 204 status with no content', () => {
+    return request(app)
+      .delete('/api/comments/2')
+      .expect(204)
+      .then(({ body }) => {
+
+        expect(typeof body.res).toBe('undefined');
+
+      }).then(() => {
+        return request(app)
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then(({ body }) => {
+            const comments = body.comments;
+            expect(comments).not.toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({ comment_id: 2 })
+              ])
+            );
+          })
+      })
+  });
+  test('DELETE ERROR 404: returns an error message if the comment_id is of valid format but does not exist', () => {
+
+
+    return request(app)
+      .delete('/api/comments/2000')
+      .expect(404)
+      .then(({ body }) => {
+
+        expect(body.message).toBe('value not found')
+      })
+  });
+  test('ERROR 400: returns an error message if the comments_id is of invalid format', () => {
+
+
+    return request(app)
+      .delete('/api/comments/banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+  });
+
 
 })

@@ -5,7 +5,8 @@ const {
     fetchAllArticles,
     fetchCommentsByArticleId,
     fetchAndPostCommentsByArticleId,
-    fetchAndPatchArticlesById
+    fetchAndPatchArticlesById,
+    fetchAndDeleteComments
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
 const { response } = require('./app');
@@ -97,7 +98,20 @@ const patchArticleById = (request, response, next) => {
         .catch((err) => {
             next(err);
         });
+}
 
+const deleteCommentsById = (request, response, next) => {
+    const commentId = request.params.comment_id;
+
+
+    checkExists('comments', 'comment_id', commentId)
+        .then(() => {
+            fetchAndDeleteComments(commentId).then((res) => {
+                response.status(204).send({ res })
+            })
+        }).catch((err) => {
+            next(err);
+        });
 
 }
 
@@ -108,5 +122,6 @@ module.exports = {
     getAllArticles,
     getCommentsByArticleId,
     postCommentsByArticleId,
-    patchArticleById
+    patchArticleById,
+    deleteCommentsById
 }
