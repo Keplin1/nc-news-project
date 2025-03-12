@@ -15,7 +15,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles,  which by default are sorted by created_at in descending order. The sort value can be set to any valid column name, and the order can be either asc or desc",
     "queries": [
       "author",
       "topic",

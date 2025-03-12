@@ -61,6 +61,10 @@ describe('GET /api/topics', () => {
 
   })
 
+});
+
+describe('404 ERROR: incorrect endpoints', () => {
+
   test('404: if path not found, responds with an error message', () => {
     return request(app)
       .get('/api/topcs')
@@ -71,12 +75,101 @@ describe('GET /api/topics', () => {
 
       })
   })
+
 });
 
+describe('/api/articles', () => {
+  test('GET 200: returns an array of article objects', () => {
+
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+
+        expect(articles.length).toEqual(13);
+        articles.forEach(article => {
+
+          const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count } = article;
+          expect(typeof author).toBe('string');
+          expect(typeof title).toBe('string');
+          expect(typeof article_id).toBe('number');
+          expect(typeof topic).toBe('string');
+          expect(typeof created_at).toBe('string');
+          expect(typeof votes).toBe('number');
+          expect(typeof article_img_url).toBe('string')
+          expect(typeof comment_count).toBe('number')
+          expect(article.body).toBe(undefined)
+
+        });
+
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true
+        });
+      })
+
+  })
+
+});
+
+describe('GET  /api/articles? (sorting queries)', () => {
+  test('GET 200: /api/articles?sort_by= column_name : sorts the articles by the provided column name and ordered in default order ', () => {
+
+    return request(app)
+      .get('/api/articles?sort_by=title')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy('title', {
+          descending: true
+        });
+      })
+
+  });
+
+  test('GET 200: /api/articles?order=asc : returns the articles in ascending order and sorted by default value', () => {
+
+    return request(app)
+      .get('/api/articles?order=asc')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toBeSortedBy('created_at', {
+          ascending: true
+        });
+      });
+  });
+
+  test('GET 200: /api/articles?sort_by=column_name?order=asc : both sorts and orders the articles according to the provided values ', () => {
+
+    return request(app)
+      .get('/api/articles?sort_by=topic&order=asc')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toBeSortedBy('topic', {
+          descending: false
+        });
+      })
+
+  });
+
+  test('ERROR 400: invalid query', () => {
+    return request(app)
+      .get('/api/articles?sort_by=reviews&order=asc')
+      .expect(400)
+      .then(({ body }) => {
+
+        expect(body.message).toBe('Invalid sort or order value')
+      })
+  });
+});
 
 describe('GET /api/articles/:article_id', () => {
   test('200: retuns an individual object of a specific id ', () => {
-
 
     return request(app)
       .get('/api/articles/4')
@@ -121,50 +214,7 @@ describe('GET /api/articles/:article_id', () => {
   })
 });
 
-describe('/api/articles', () => {
-  test('GET 200: returns an array of article objects', () => {
 
-    return request(app)
-      .get('/api/articles')
-      .expect(200)
-      .then(({ body }) => {
-        const articles = body.articles;
-
-
-        expect(articles.length).toEqual(13);
-        articles.forEach(article => {
-
-          const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count } = article;
-          expect(typeof author).toBe('string');
-          expect(typeof title).toBe('string');
-          expect(typeof article_id).toBe('number');
-          expect(typeof topic).toBe('string');
-          expect(typeof created_at).toBe('string');
-          expect(typeof votes).toBe('number');
-          expect(typeof article_img_url).toBe('string')
-          expect(typeof comment_count).toBe('number')
-          expect(article.body).toBe(undefined)
-
-        });
-
-        expect(articles).toBeSortedBy('created_at', {
-          descending: true
-        });
-      })
-
-  })
-  test('404: if path not found, responds with an error message', () => {
-    return request(app)
-      .get('/api/articls')
-      .expect(404)
-      .then(({ body }) => {
-        const response = body.message;
-        expect(response).toEqual('404: path not found')
-
-      })
-  })
-
-});
 
 
 describe('/api/articles/:article_id/comments', () => {
@@ -443,15 +493,9 @@ describe('GET /api/users', () => {
       })
 
   })
-
-  test('404: if path not found, responds with an error message', () => {
-    return request(app)
-      .get('/api/userss')
-      .expect(404)
-      .then(({ body }) => {
-        const response = body.message;
-        expect(response).toEqual('404: path not found')
-
-      })
-  })
 });
+
+
+
+
+
