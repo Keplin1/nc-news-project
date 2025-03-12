@@ -168,6 +168,73 @@ describe('GET  /api/articles? (sorting queries)', () => {
   });
 });
 
+
+
+
+
+describe('/api/articles?topic= <topic_name>', () => {
+
+  test('GET 200: returns articles filtred by selected topic', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles.length).toEqual(12);
+        articles.forEach(article => {
+
+          const { author, title, article_id, topic, created_at, votes, article_img_url } = article;
+          expect(topic).toBe('mitch');
+          expect(typeof author).toBe('string');
+          expect(typeof title).toBe('string');
+          expect(typeof article_id).toBe('number');
+          expect(typeof created_at).toBe('string');
+          expect(typeof votes).toBe('number');
+          expect(typeof article_img_url).toBe('string')
+          expect(typeof article.body).toBe('string')
+
+        });
+
+
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true
+        });
+      })
+
+
+  });
+  test('GET 200: returns an empy array if the topic is valid but does not have any articles', () => {
+
+    return request(app)
+      .get('/api/articles?topic=paper')
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles.length).toBe(0);
+        expect(typeof articles).toBe('object')
+
+      })
+
+  })
+  test('ERROR 404: the topic can not be found in the database', () => {
+
+
+    return request(app)
+      .get('/api/articles?topic=doggos')
+      .expect(404)
+      .then(({ body }) => {
+
+        expect(body.message).toBe('value not found')
+      })
+
+  })
+
+})
+
+
+
 describe('GET /api/articles/:article_id', () => {
   test('200: retuns an individual object of a specific id ', () => {
 

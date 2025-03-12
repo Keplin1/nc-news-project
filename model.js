@@ -98,6 +98,16 @@ const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc') => 
     }
 };
 
+
+const filterByTopic = (topic) => {
+
+    return db.query('SELECT * FROM articles WHERE topic =$1 ORDER BY created_at DESC ', [topic]).then(({ rows }) => {
+        return rows
+
+    })
+
+}
+
 module.exports = {
     fetchAllTopics,
     fetchArticleById,
@@ -107,5 +117,6 @@ module.exports = {
     fetchAndPatchArticlesById,
     fetchAndDeleteComments,
     fetchAllUsers,
-    sortAndOrderArticles
+    sortAndOrderArticles,
+    filterByTopic
 }

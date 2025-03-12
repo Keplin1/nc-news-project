@@ -8,7 +8,8 @@ const {
     fetchAndPatchArticlesById,
     fetchAndDeleteComments,
     fetchAllUsers,
-    sortAndOrderArticles
+    sortAndOrderArticles,
+    filterByTopic
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
 
@@ -58,6 +59,18 @@ const getAllArticles = (request, response, next) => {
                 next(err)
             })
 
+    } else if (request.query.topic) {
+        const topic = request.query.topic
+        checkExists('topics', 'slug', topic)
+            .then(() => {
+                filterByTopic(topic).then((articles) => {
+                    response.status(200).send({ articles })
+                })
+
+            }).catch((err) => {
+                next(err)
+
+            })
     }
     else {
         fetchAllArticles()
