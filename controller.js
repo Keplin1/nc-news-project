@@ -7,7 +7,8 @@ const {
     fetchAndPostCommentsByArticleId,
     fetchAndPatchArticlesById,
     fetchAndDeleteComments,
-    fetchAllUsers
+    fetchAllUsers,
+    sortAndOrderArticles
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
 
@@ -36,13 +37,38 @@ const getArticleById = (request, response, next) => {
 };
 
 const getAllArticles = (request, response, next) => {
-    fetchAllArticles()
-        .then((articles) => {
-            response.status(200).send({ articles })
-        }).catch((err) => {
-            next(err)
-        })
+
+    if (request.query.sort_by) {
+
+        sortAndOrderArticles(request.query.sort_by, request.query.order)
+            .then((articles) => {
+                response.status(200).send({ articles })
+            })
+            .catch((err) => {
+                next(err)
+            })
+    }
+    else if (request.query.order) {
+        sortAndOrderArticles(undefined, request.query.order)
+            .then((articles) => {
+                response.status(200).send({ articles })
+
+            })
+            .catch((err) => {
+                next(err)
+            })
+
+    }
+    else {
+        fetchAllArticles()
+            .then((articles) => {
+                response.status(200).send({ articles })
+            }).catch((err) => {
+                next(err)
+            })
+    }
 };
+
 
 const getCommentsByArticleId = (request, response, next) => {
     const articleId = request.params.article_id;

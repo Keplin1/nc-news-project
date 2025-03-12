@@ -84,6 +84,19 @@ const fetchAllUsers = () => {
     })
 };
 
+const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc') => {
+
+    const allowedInputSort = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url'];
+    const allowedInputsOrder = ['asc', 'desc'];
+
+    if (!allowedInputSort.includes(sortValue) || !allowedInputsOrder.includes(orderValue)) {
+        return Promise.reject({ status: 400, message: "Invalid sort or order value" });
+    } else {
+        return db.query(`SELECT * FROM articles ORDER BY ${sortValue} ${orderValue} `).then(({ rows }) => {
+            return rows
+        })
+    }
+};
 
 module.exports = {
     fetchAllTopics,
@@ -93,5 +106,6 @@ module.exports = {
     fetchAndPostCommentsByArticleId,
     fetchAndPatchArticlesById,
     fetchAndDeleteComments,
-    fetchAllUsers
+    fetchAllUsers,
+    sortAndOrderArticles
 }
