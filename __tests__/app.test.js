@@ -169,9 +169,6 @@ describe('GET  /api/articles? (sorting queries)', () => {
 });
 
 
-
-
-
 describe('/api/articles?topic= <topic_name>', () => {
 
   test('GET 200: returns articles filtred by selected topic', () => {
@@ -239,15 +236,63 @@ describe('GET /api/articles/:article_id', () => {
   test('200: retuns an individual object of a specific id ', () => {
 
     return request(app)
-      .get('/api/articles/4')
+      .get('/api/articles/2')
       .expect(200)
       .then(({ body }) => {
 
         const article = body.articles[0];
 
-        const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
 
-        expect(article_id).toBe(4);
+        const { article_id, title, topic, author, created_at, votes, article_img_url, comment_count } = article;
+
+        expect(article_id).toBe(2);
+        expect(typeof title).toBe('string');
+        expect(typeof topic).toBe('string');
+        expect(typeof author).toBe('string');
+        expect(typeof article.body).toBe('string')
+        expect(typeof created_at).toBe('string');
+        expect(typeof votes).toBe('number');
+        expect(typeof article_img_url).toBe('string')
+        expect(typeof comment_count).toBe('number')
+
+      })
+  });
+  test('200: retuns an individual object of a specific id with a total comment count', () => {
+
+    return request(app)
+      .get('/api/articles/1')
+      .expect(200)
+      .then(({ body }) => {
+
+        const article = body.articles[0];
+
+        const { article_id, title, topic, author, created_at, votes, article_img_url, comment_count } = article;
+
+        expect(comment_count).toBe(11);
+        expect(article_id).toBe(1);
+        expect(typeof title).toBe('string');
+        expect(typeof topic).toBe('string');
+        expect(typeof author).toBe('string');
+        expect(typeof article.body).toBe('string')
+        expect(typeof created_at).toBe('string');
+        expect(typeof votes).toBe('number');
+        expect(typeof article_img_url).toBe('string')
+
+      })
+  });
+  test('200: retuns an individual object of a specific id with the total comment count set to zero when the article has no comments', () => {
+
+    return request(app)
+      .get('/api/articles/2')
+      .expect(200)
+      .then(({ body }) => {
+
+        const article = body.articles[0];
+
+        const { article_id, title, topic, author, created_at, votes, article_img_url, comment_count } = article;
+
+        expect(comment_count).toBe(0);
+        expect(article_id).toBe(2);
         expect(typeof title).toBe('string');
         expect(typeof topic).toBe('string');
         expect(typeof author).toBe('string');
