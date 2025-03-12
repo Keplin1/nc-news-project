@@ -302,7 +302,7 @@ describe('GET /api/articles/:article_id', () => {
         expect(typeof article_img_url).toBe('string')
 
       })
-  })
+  });
 
   test('ERROR 404: responds with an error message if id is of valid format but does not exist in the database', () => {
 
@@ -387,7 +387,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.message).toBe("400: passed data is invalid")
       })
   });
-})
+});
 
 
 describe('POST /api/articles/:article_id/comments', () => {
