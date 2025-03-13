@@ -12,6 +12,7 @@
     "test-seed": "jest seed.test.js",
     "utils-test": "jest utils.test.js",
     "start": "node listener.js",
+    "start-production": "NODE_ENV=production node listener.js",
     "seed-prod": "NODE_ENV=production npm run seed-dev"
   },
   "repository": {
