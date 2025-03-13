@@ -11,7 +11,7 @@
     "test-seed": "jest seed.test.js",
     "utils-test": "jest utils.test.js",
     "start": "node listen.js",
-    "seed-prod": "NODE_ENV=production npm run seed"
+    "seed-prod": "NODE_ENV=production npm run seed-dev"
   },
   "repository": {
     "type": "git",
