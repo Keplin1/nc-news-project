@@ -8,6 +8,7 @@
     "seed-dev": "node ./db/seeds/run-seed.js",
     "test": "jest --verbose --forceExit",
     "prepare": "husky install",
+    "test-app": "npm t __tests__/app.test.js",
     "test-seed": "jest seed.test.js",
     "utils-test": "jest utils.test.js",
     "start": "node listener.js",

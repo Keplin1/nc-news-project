@@ -50,7 +50,7 @@
       ]
     }
   },
-  "'GET /api/articles/:article_id'": {
+  "GET /api/articles/:article_id": {
     "description": "retuns an individual article object selected by its id",
     "queries": [],
     "exampleResponse": {
@@ -68,7 +68,7 @@
       ]
     }
   },
-  "GET /api/articles/:article_id/comments'": {
+  "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments belonding to a specific article",
     "queries": [],
     "exampleResponse": {
@@ -118,7 +118,7 @@
       ]
     }
   },
-  "'DELETE /api/comments/:comment_id'": {
+  "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment by its id and returns nothing",
     "queries": [],
     "exampleResponse": {
