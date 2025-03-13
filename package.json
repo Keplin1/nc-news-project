@@ -8,9 +8,10 @@
     "seed-dev": "node ./db/seeds/run-seed.js",
     "test": "jest --verbose --forceExit",
     "prepare": "husky install",
-    "start": "node listen.js",
     "test-seed": "jest seed.test.js",
-    "utils-test": "jest utils.test.js"
+    "utils-test": "jest utils.test.js",
+    "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed"
   },
   "repository": {
     "type": "git",
