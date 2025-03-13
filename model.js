@@ -20,7 +20,7 @@ const fetchArticleById = (id) => {
                     message: '404: id was not found'
                 });
             }
-            return rows;
+            return rows[0];
         });
 };
 
@@ -63,7 +63,7 @@ const fetchAndPostCommentsByArticleId = (article_id, username, body) => {
         [username, body, article_id]
     ).then(({ rows }) => {
 
-        return rows
+        return rows[0]
     })
 
 };
@@ -72,7 +72,7 @@ const fetchAndPatchArticlesById = (currentVote, inc_votes, article_id) => {
     const updatedVote = currentVote + inc_votes;
 
     return db.query('UPDATE articles SET votes =$1 WHERE article_id =$2 RETURNING *', [updatedVote, article_id]).then(({ rows }) => {
-        return rows
+        return rows[0]
     })
 };
 
@@ -88,6 +88,13 @@ const fetchAllUsers = () => {
         return rows
     })
 };
+const fetchUsersByUserName = (username) => {
+
+    return db.query('SELECT users.* FROM users WHERE users.username= $1', [username]).then(({ rows }) => {
+        return rows[0]
+
+    })
+}
 
 const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc') => {
 
@@ -123,5 +130,6 @@ module.exports = {
     fetchAndDeleteComments,
     fetchAllUsers,
     sortAndOrderArticles,
-    filterByTopic
+    filterByTopic,
+    fetchUsersByUserName
 }

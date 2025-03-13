@@ -240,7 +240,7 @@ describe('GET /api/articles/:article_id', () => {
       .expect(200)
       .then(({ body }) => {
 
-        const article = body.articles[0];
+        const article = body.articles;
 
 
         const { article_id, title, topic, author, created_at, votes, article_img_url, comment_count } = article;
@@ -264,7 +264,7 @@ describe('GET /api/articles/:article_id', () => {
       .expect(200)
       .then(({ body }) => {
 
-        const article = body.articles[0];
+        const article = body.articles;
 
         const { article_id, title, topic, author, created_at, votes, article_img_url, comment_count } = article;
 
@@ -287,7 +287,7 @@ describe('GET /api/articles/:article_id', () => {
       .expect(200)
       .then(({ body }) => {
 
-        const article = body.articles[0];
+        const article = body.articles;
 
         const { article_id, title, topic, author, created_at, votes, article_img_url, comment_count } = article;
 
@@ -398,7 +398,7 @@ describe('POST /api/articles/:article_id/comments', () => {
       .send({ username: "butter_bridge", body: 'the Office US is way better than the UKs version' })
       .expect(201)
       .then(({ body: responseBody }) => {
-        const comment = responseBody.comments[0];
+        const comment = responseBody.comments;
         const { author, body } = comment;
         expect(author).toBe("butter_bridge");
         expect(comment.body).toBe('the Office US is way better than the UKs version');
@@ -477,7 +477,7 @@ describe('PATCH /api/articles/:article_id', () => {
       .expect(200)
       .then(({ body }) => {
 
-        const article = body.articles[0];
+        const article = body.articles;
 
         const { article_id, title, topic, author, created_at, votes, article_img_url } = article;
 
@@ -593,6 +593,7 @@ describe('GET /api/users', () => {
       .then(({ body }) => {
         const users = body.users;
 
+
         expect(users.length).toEqual(4);
         users.forEach(user => {
 
@@ -608,6 +609,36 @@ describe('GET /api/users', () => {
 });
 
 
+describe('GET /api/users/:username', () => {
+  test('GET 200: returns a user object by its username', () => {
 
+    return request(app)
+      .get('/api/users/icellusedkars')
+      .expect(200)
+      .then(({ body }) => {
+
+        const user = body.users
+
+
+        const { username, avatar_url, name } = user;
+        expect(username).toBe('icellusedkars');
+        expect(typeof avatar_url).toBe('string');
+        expect(typeof name).toBe('string');
+
+      })
+
+  });
+  test('ERROR 404: responds with an error when passed a username that can not be found in the database', () => {
+
+    return request(app)
+      .get('/api/users/mariacallas')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('value not found')
+
+      })
+  })
+
+})
 
 

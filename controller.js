@@ -9,7 +9,8 @@ const {
     fetchAndDeleteComments,
     fetchAllUsers,
     sortAndOrderArticles,
-    filterByTopic
+    filterByTopic,
+    fetchUsersByUserName
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
 
@@ -163,6 +164,24 @@ const getAllUsers = (request, response, next) => {
         })
 }
 
+
+const getUserByUserName = (request, response, next) => {
+    const userName = request.params.username;
+
+
+    checkExists('users', 'username', userName)
+        .then(() => {
+            fetchUsersByUserName(userName).then((users) => {
+                response.status(200).send({ users })
+            })
+
+        }).catch((err) => {
+            next(err)
+
+        })
+}
+
+
 module.exports = {
     getAllEndpoints,
     getAllTopics,
@@ -172,5 +191,6 @@ module.exports = {
     postCommentsByArticleId,
     patchArticleById,
     deleteCommentsById,
-    getAllUsers
+    getAllUsers,
+    getUserByUserName
 };
