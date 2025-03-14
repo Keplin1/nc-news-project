@@ -10,9 +10,12 @@ const {
     fetchAllUsers,
     sortAndOrderArticles,
     filterByTopic,
-    fetchUsersByUserName
+    fetchUsersByUserName,
+    fetchAndPatchCommentById,
+    fetchAndPostArticles
 } = require('./model');
 const { checkExists } = require('./db/seeds/utils');
+const { response } = require('./app');
 
 const getAllEndpoints = (request, response, next) => {
     response.status(200).send({ endpoints });
@@ -162,7 +165,7 @@ const getAllUsers = (request, response, next) => {
         }).catch((err) => {
             next(err)
         })
-}
+};
 
 
 const getUserByUserName = (request, response, next) => {
@@ -179,7 +182,60 @@ const getUserByUserName = (request, response, next) => {
             next(err)
 
         })
-}
+};
+
+const patchCommentById = (request, response, next) => {
+    const commentId = request.params.comment_id
+    const { inc_votes } = request.body;
+
+
+    checkExists('comments', 'comment_id', commentId)
+        .then((res) => {
+
+            const currentVote = res[0].votes;
+
+            return { currentVote }
+        })
+        .then(({ currentVote }) => {
+
+
+            return fetchAndPatchCommentById(currentVote, inc_votes, commentId);
+        })
+        .then((comments) => {
+
+            response.status(200).send({ comments });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};
+
+const postAllArticles = (request, response, next) => {
+    const { author, title, body, topic, article_img_url } = request.body;
+    if (!author || !title || !body || !topic) {
+        return response.status(400).send({ message: "Missing required fields" });
+    }
+
+
+    checkExists('users', 'username', author)
+        .then(() => {
+            return checkExists('topics', 'slug', topic);
+
+
+        }).then(() => {
+
+            return fetchAndPostArticles(author, title, body, topic, article_img_url)
+
+        }).then((articles) => {
+
+            response.status(201).send({ articles })
+
+        }).catch((err) => {
+            next(err)
+        })
+};
+
+
 
 
 module.exports = {
@@ -192,5 +248,7 @@ module.exports = {
     patchArticleById,
     deleteCommentsById,
     getAllUsers,
-    getUserByUserName
+    getUserByUserName,
+    patchCommentById,
+    postAllArticles
 };

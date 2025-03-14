@@ -88,7 +88,7 @@
     "description": "Serves a newly posted comment. Does not work for non-existing users, require a username from the database ",
     "queries": [],
     "exampleResponse": {
-      "comment": [
+      "comments": [
         {
           "comment_id": 19,
           "article_id": 2,
@@ -104,7 +104,7 @@
     "description": "updates an article by id increasing its vote count. Request body accepts an object in a form: {inc_votes: newVote}",
     "queries": [],
     "exampleResponse": {
-      "comment": [
+      "comments": [
         {
           "article_id": 2,
           "title": "Sony Vaio; or, The Laptop",
@@ -149,6 +149,40 @@
         "name": "sam",
         "avatar_url": "https: //avatars2.githubusercontent.com/u/24604688?s=460&v=4"
       }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates a comment by id increasing its vote count. Request body accepts an object in a form: {inc_votes: newVote}",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "article_id": 9,
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "votes": -1,
+          "author": "butter_bridge",
+          "created_at": "2020-04-06T12: 17: 00.000Z"
+        }
+      ]
+    }
+  },
+  "POST /api/articles": {
+    "description": "Serves a newly posted article. Does not work for non-existing users or topics , requires a username and a topic from the database. The image_url is set to default value, hence it can be omitted when posting the body",
+    "queries": [],
+    "exampleResponse": {
+      "articles": [
+        {
+          "article_id": 14,
+          "title": "Threat level midnight",
+          "topic": "paper",
+          "author": "icellusedkars",
+          "body": "The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office",
+          "created_at": "2025-03-14T13: 49: 27.487Z",
+          "votes": 0,
+          "article_img_url": "https: //images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
     }
   }
 }

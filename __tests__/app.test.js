@@ -641,4 +641,166 @@ describe('GET /api/users/:username', () => {
 
 })
 
+describe('PATCH /api/comments/:comment_id', () => {
 
+  test('PATCH 200: responds with an updated comment', () => {
+
+    return request(app)
+      .patch('/api/comments/1')
+      .send({ inc_votes: -17 })
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comments
+        const { comment_id, article_id, votes, author, created_at } = comment;
+        expect(comment_id).toBe(1);
+        expect(votes).toBe(-1)
+        expect(typeof article_id).toBe('number');
+        expect(typeof author).toBe('string');
+        expect(typeof created_at).toBe('string');
+        expect(typeof comment.body).toBe('string')
+
+      })
+  });
+  test('PATCH ERROR 400:  the input in the body is of invalid format', () => {
+
+    return request(app)
+      .patch('/api/comments/1')
+      .send({ inc_votes: 'one' })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+
+  });
+  test('PATCH ERROR 400: the input in the body is missing', () => {
+
+    return request(app)
+      .patch('/api/comments/1')
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+
+  });
+  test('ERROR 404: returns an error message if the comments_id is of valid format but does not exist', () => {
+
+
+    return request(app)
+      .patch('/api/articles/2222')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe('value not found')
+      })
+  });
+  test('ERROR 400: returns an error message if the article_id is of invalid format', () => {
+
+
+    return request(app)
+      .patch('/api/comments/banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("400: passed data is invalid")
+      })
+  });
+});
+
+describe('POST /api/articles', () => {
+  test('POST 201: respons with a newly posted article object', () => {
+
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'icellusedkars', title: "Threat level midnight",
+        body: "The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office",
+        topic: "paper", article_img_url: "https://images.pexels.com/photos/1/paper-office"
+      })
+      .expect(201)
+      .then(({ body: responseBody }) => {
+
+        const article = responseBody.articles;
+
+        const { author, title, body, topic, article_img_url } = article;
+        expect(author).toBe("icellusedkars");
+        expect(body).toBe("The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office");
+        expect(title).toBe("Threat level midnight");
+        expect(topic).toBe('paper');
+        expect(typeof article_img_url).toBe('string')
+
+
+      })
+  });
+
+  test('POST 201: if the posted body does not include image_url then it gets set to the default value', () => {
+
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'icellusedkars', title: "Threat level midnight",
+        body: "The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office",
+        topic: "paper"
+      })
+      .expect(201)
+      .then(({ body: responseBody }) => {
+        const article = responseBody.articles;
+
+
+        const { author, title, body, topic, article_img_url } = article;
+        expect(author).toBe("icellusedkars");
+        expect(body).toBe("The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office");
+        expect(title).toBe("Threat level midnight");
+        expect(topic).toBe('paper');
+        expect(article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+
+
+      })
+
+
+
+  });
+  test('ERROR 404: the author does not match the users data', () => {
+
+
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: "Michael_Scarn", title: "Threat level midnight",
+        body: "The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office",
+        topic: "paper"
+      })
+      .expect(404)
+      .then(({ body }) => {
+
+        expect(body.message).toBe('value not found')
+
+      })
+  })
+
+  test('POST ERROR 404: the topic does not match the topics data', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'icellusedkars', title: "Threat level midnight",
+        body: "The 25 minute 'movie version' features expanded scenes from Michael Scott's film 'Threat Level Midnight' and leaves out all the reactions in the office",
+        topic: "movies"
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("value not found")
+
+      })
+
+  })
+  test('POST ERROR 400: a few of the keys, which do not have pre-defined default values are missing', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({ author: 'icellusedkars', title: "Threat level midnight" })
+      .expect(400)
+      .then(({ body }) => {
+
+        expect(body.message).toBe("Missing required fields")
+
+      })
+  })
+
+})

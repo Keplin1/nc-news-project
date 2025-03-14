@@ -118,6 +118,23 @@ const filterByTopic = (topic) => {
 
     })
 
+};
+const fetchAndPatchCommentById = (currentVote, inc_votes, id) => {
+
+    const updatedVotes = currentVote + inc_votes;
+    return db.query('UPDATE comments SET votes =$1 WHERE comment_id= $2 RETURNING *', [updatedVotes, id]).then(({ rows }) => {
+        return rows[0]
+
+    })
+
+}
+const fetchAndPostArticles = (author, title, body, topic, article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700") => {
+
+    return db.query('INSERT into articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *', [author, title, body, topic, article_img_url]).then(({ rows }) => {
+        return rows[0]
+
+    })
+
 }
 
 module.exports = {
@@ -131,5 +148,7 @@ module.exports = {
     fetchAllUsers,
     sortAndOrderArticles,
     filterByTopic,
-    fetchUsersByUserName
+    fetchUsersByUserName,
+    fetchAndPatchCommentById,
+    fetchAndPostArticles
 }
