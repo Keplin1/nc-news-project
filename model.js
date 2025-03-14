@@ -24,7 +24,7 @@ const fetchArticleById = (id) => {
         });
 };
 
-const fetchAllArticles = () => {
+const fetchAllArticles = (limit = 10, offSet = 0) => {
     return db.query(`
             SELECT articles.author, 
             articles.title, 
@@ -38,7 +38,8 @@ const fetchAllArticles = () => {
             LEFT JOIN comments 
                 ON articles.article_id = comments.article_id 
             GROUP BY articles.article_id 
-            ORDER BY articles.created_at DESC`)
+            ORDER BY articles.created_at DESC
+            LIMIT $1 OFFSET $2`, [limit, offSet])
         .then(({ rows }) => {
             return rows
         })
@@ -96,7 +97,7 @@ const fetchUsersByUserName = (username) => {
     })
 }
 
-const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc') => {
+const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc', limit = 10, offSet = 0) => {
 
     const allowedInputSort = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url'];
     const allowedInputsOrder = ['asc', 'desc'];
@@ -104,16 +105,15 @@ const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc') => 
     if (!allowedInputSort.includes(sortValue) || !allowedInputsOrder.includes(orderValue)) {
         return Promise.reject({ status: 400, message: "Invalid sort or order value" });
     } else {
-        return db.query(`SELECT * FROM articles ORDER BY ${sortValue} ${orderValue} `).then(({ rows }) => {
+        return db.query(`SELECT * FROM articles ORDER BY ${sortValue} ${orderValue} LIMIT $1 OFFSET $2`, [limit, offSet]).then(({ rows }) => {
             return rows
         })
     }
 };
 
 
-const filterByTopic = (topic) => {
-
-    return db.query('SELECT * FROM articles WHERE topic =$1 ORDER BY created_at DESC ', [topic]).then(({ rows }) => {
+const filterByTopic = (topic, limit = 10, offSet = 0) => {
+    return db.query('SELECT * FROM articles WHERE topic =$1 ORDER BY created_at DESC LIMIT $2 OFFSET $3', [topic, limit, offSet]).then(({ rows }) => {
         return rows
 
     })

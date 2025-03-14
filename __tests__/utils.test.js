@@ -4,7 +4,8 @@ const {
   formatUsers,
   formatArticles,
   formatComments,
-  checkExists
+  checkExists,
+  paginationCount
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -291,7 +292,7 @@ describe('formatComments', () => {
 describe('checkExists', () => {
   test('resolves the value if the resource exists', () => {
 
-    checkExists('articles', 'article_id', 1).then((response) => {
+    return checkExists('articles', 'article_id', 1).then((response) => {
       expect(typeof response).toBe('object');
       expect(response.length).toEqual(1)
     })
@@ -299,10 +300,38 @@ describe('checkExists', () => {
 
   test('rejects if the resource does not exists', () => {
 
-    checkExists('articles', 'article_id', 155).then((response) => {
-      expect(response.message).toBe('value not found');
-      expect(response.status).toBe(404)
-    })
+
+    return checkExists('articles', 'article_id', 155)
+      .catch((err) => {
+        expect(err.message).toBe('value not found');
+        expect(err.status).toBe(404);
+      });
   })
 
+});
+
+describe('paginationCount', () => {
+
+  test('returns the total count of rows for a specified table', () => {
+    return paginationCount('articles')
+      .then((response) => {
+
+        expect(response).toBe(13);
+        expect(typeof response).toBe('number');
+
+      })
+  });
+
+  test('returns the total count of rows for the speified table when a filter is applied ', () => {
+
+    return paginationCount('articles', 'author', 'icellusedkars').then((response) => {
+      expect(response).toBe(6);
+      expect(typeof response).toBe('number');
+
+
+    })
+  })
 })
+
+
+

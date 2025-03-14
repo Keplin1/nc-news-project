@@ -66,6 +66,25 @@ const checkExists = (tableName, column, value) => {
   })
 }
 
+const paginationCount = (tableName, columnName, filterValue) => { // articles // 
+  let queryStr;
+  let queryValues = [];
+
+  if (columnName && filterValue) {
+    queryStr = format('SELECT COUNT(*) FROM %I WHERE %I = $1', tableName, columnName);
+    queryValues.push(filterValue);
+  } else {
+
+    queryStr = format('SELECT COUNT(*) FROM %I', tableName);
+  }
+
+  return db.query(queryStr, queryValues)
+    .then(({ rows }) => {
+      return parseInt(rows[0].count);
+    });
+
+}
 
 
-module.exports = { formatTopics, convertTimestampToDate, formatUsers, formatArticles, formatComments, checkExists }
+
+module.exports = { formatTopics, convertTimestampToDate, formatUsers, formatArticles, formatComments, checkExists, paginationCount }

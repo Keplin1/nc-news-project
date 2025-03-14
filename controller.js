@@ -14,8 +14,9 @@ const {
     fetchAndPatchCommentById,
     fetchAndPostArticles
 } = require('./model');
-const { checkExists } = require('./db/seeds/utils');
+const { checkExists, paginationCount } = require('./db/seeds/utils');
 const { response } = require('./app');
+const { totalCount } = require('./db/connection');
 
 const getAllEndpoints = (request, response, next) => {
     response.status(200).send({ endpoints });
@@ -43,20 +44,32 @@ const getArticleById = (request, response, next) => {
 
 const getAllArticles = (request, response, next) => {
 
+    const limit = request.query.limit ? parseInt(request.query.limit) : 10;
+    const page = request.query.p ? parseInt(request.query.page) : 1;
+
+    const offSet = (page - 1) * limit;
+
     if (request.query.sort_by) {
 
-        sortAndOrderArticles(request.query.sort_by, request.query.order)
+        sortAndOrderArticles(request.query.sort_by, request.query.order, limit, offSet)
             .then((articles) => {
-                response.status(200).send({ articles })
+                return paginationCount('articles').then((total_count) => {
+
+                    response.status(200).send({ articles, total_count })
+                })
             })
             .catch((err) => {
                 next(err)
             })
     }
     else if (request.query.order) {
-        sortAndOrderArticles(undefined, request.query.order)
+        sortAndOrderArticles(undefined, request.query.order, limit, offSet)
             .then((articles) => {
-                response.status(200).send({ articles })
+                return paginationCount('articles').then((total_count) => {
+
+                    response.status(200).send({ articles, total_count })
+
+                })
 
             })
             .catch((err) => {
@@ -67,8 +80,10 @@ const getAllArticles = (request, response, next) => {
         const topic = request.query.topic
         checkExists('topics', 'slug', topic)
             .then(() => {
-                filterByTopic(topic).then((articles) => {
-                    response.status(200).send({ articles })
+                filterByTopic(topic, limit, offSet).then((articles) => {
+                    return paginationCount('articles').then((total_count) => {
+                        response.status(200).send({ articles, total_count })
+                    })
                 })
 
             }).catch((err) => {
@@ -77,9 +92,12 @@ const getAllArticles = (request, response, next) => {
             })
     }
     else {
-        fetchAllArticles()
+        fetchAllArticles(limit, offSet)
             .then((articles) => {
-                response.status(200).send({ articles })
+                return paginationCount('articles').then((total_count) => {
+
+                    response.status(200).send({ articles, total_count })
+                })
             }).catch((err) => {
                 next(err)
             })

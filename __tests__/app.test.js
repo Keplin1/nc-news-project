@@ -88,7 +88,39 @@ describe('/api/articles', () => {
         const articles = body.articles;
 
 
-        expect(articles.length).toEqual(13);
+        expect(articles.length).toEqual(10);
+        articles.forEach(article => {
+
+          const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count } = article;
+          expect(typeof author).toBe('string');
+          expect(typeof title).toBe('string');
+          expect(typeof article_id).toBe('number');
+          expect(typeof topic).toBe('string');
+          expect(typeof created_at).toBe('string');
+          expect(typeof votes).toBe('number');
+          expect(typeof article_img_url).toBe('string')
+          expect(typeof comment_count).toBe('number')
+          expect(article.body).toBe(undefined)
+
+        });
+
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true
+        });
+      })
+
+  });
+  test('GET 200: /api/articles?limit returns a limited number of results', () => {
+
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+
+        const articles = body.articles;
+        const total_count = body.total_count;
+        expect(typeof total_count).toBe('number')
+        expect(articles.length).toEqual(10);
         articles.forEach(article => {
 
           const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count } = article;
@@ -112,6 +144,7 @@ describe('/api/articles', () => {
   })
 
 });
+
 
 describe('GET  /api/articles? (sorting queries)', () => {
   test('GET 200: /api/articles?sort_by= column_name : sorts the articles by the provided column name and ordered in default order ', () => {
@@ -171,14 +204,14 @@ describe('GET  /api/articles? (sorting queries)', () => {
 
 describe('/api/articles?topic= <topic_name>', () => {
 
-  test('GET 200: returns articles filtred by selected topic', () => {
+  test('GET 200: returns articles filtered by selected topic', () => {
     return request(app)
       .get('/api/articles?topic=mitch')
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
 
-        expect(articles.length).toEqual(12);
+        expect(articles.length).toEqual(10);
         articles.forEach(article => {
 
           const { author, title, article_id, topic, created_at, votes, article_img_url } = article;
@@ -229,6 +262,19 @@ describe('/api/articles?topic= <topic_name>', () => {
   })
 
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -803,4 +849,6 @@ describe('POST /api/articles', () => {
       })
   })
 
-})
+});
+
+
