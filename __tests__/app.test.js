@@ -268,16 +268,6 @@ describe('/api/articles?topic= <topic_name>', () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
 describe('GET /api/articles/:article_id', () => {
   test('200: retuns an individual object of a specific id ', () => {
 

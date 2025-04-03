@@ -99,7 +99,7 @@ const fetchUsersByUserName = (username) => {
 
 const sortAndOrderArticles = (sortValue = 'created_at', orderValue = 'desc', limit = 10, offSet = 0) => {
 
-    const allowedInputSort = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url'];
+    const allowedInputSort = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_img_url', 'comment_count'];
     const allowedInputsOrder = ['asc', 'desc'];
 
     if (!allowedInputSort.includes(sortValue) || !allowedInputsOrder.includes(orderValue)) {
